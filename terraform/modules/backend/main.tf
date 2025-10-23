@@ -62,6 +62,17 @@ resource "aws_api_gateway_integration" "upload_integration" {
   uri                     = aws_lambda_function.upload_url_lambda.invoke_arn
 }
 
+  resource "aws_api_gateway_integration_response" "upload_post_response" {
+    rest_api_id = aws_api_gateway_rest_api.api.id
+    resource_id = aws_api_gateway_resource.upload.id
+    http_method = aws_api_gateway_method.upload_post.http_method
+    status_code = aws_api_gateway_method_response.upload_response.status_code
+
+    response_parameters = {
+      "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
+  }
+
 resource "aws_api_gateway_method_response" "upload_response" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.upload.id
@@ -94,6 +105,17 @@ resource "aws_api_gateway_integration" "analyze_integration" {
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.analyze_lambda.invoke_arn
 }
+
+  resource "aws_api_gateway_integration_response" "analyze_post_response" {
+    rest_api_id = aws_api_gateway_rest_api.api.id
+    resource_id = aws_api_gateway_resource.analyze.id
+    http_method = aws_api_gateway_method.analyze_post.http_method
+    status_code = aws_api_gateway_method_response.analyze_response.status_code
+
+    response_parameters = {
+      "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
+  }
 
 resource "aws_api_gateway_method_response" "analyze_response" {
   rest_api_id = aws_api_gateway_rest_api.api.id
