@@ -2,12 +2,9 @@ name: "Deploy Infra"
 
 on:
   push:
-    branches:
-    - main
+    branches: [ main ]
     paths:
-    - "terraform/**"
-  workflow_dispatch:
-
+      - "terraform/**"
 
 jobs:
   deploy-infra:
@@ -17,7 +14,7 @@ jobs:
     steps:
 
     - name: checkout repository
-      uses: actions/checkout@v4
+      uses: action/checkout@v4
 
     - name: Configure Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -41,4 +38,4 @@ jobs:
       working-directory: ./terraform
       run: |
         terraform init
-        terraform apply -auto-approve --var-file=terraform.tfvars
+        terraform apply -auto-approve --var-file=./terraform/terraform.tfvars
