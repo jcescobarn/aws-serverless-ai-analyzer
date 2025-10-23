@@ -1,4 +1,3 @@
-# Public read policy for static website
 resource "aws_s3_bucket_policy" "public_read" {
   bucket = aws_s3_bucket.frontend_bucket.id
   policy = jsonencode({
@@ -16,7 +15,6 @@ resource "aws_s3_bucket" "frontend_bucket" {
 }
 
 
-# Configuración de sitio estático público en S3
 resource "aws_s3_bucket_website_configuration" "frontend_website" {
   bucket = aws_s3_bucket.frontend_bucket.id
 
