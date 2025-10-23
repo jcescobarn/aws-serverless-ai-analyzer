@@ -22,6 +22,12 @@ resource "aws_lambda_function" "upload_url_lambda" {
   runtime          = "python3.10"
   role             = data.aws_iam_role.lab_role.arn
   timeout          = 60
+
+  environment {
+    variables = {
+      IMAGE_BUCKET_NAME = aws_s3_bucket.image_bucket.bucket
+    }
+  }
 }
 
 resource "aws_lambda_function" "analyze_lambda" {
@@ -32,6 +38,12 @@ resource "aws_lambda_function" "analyze_lambda" {
   runtime          = "python3.10"
   role             = data.aws_iam_role.lab_role.arn
   timeout          = 60
+
+  environment {
+    variables = {
+      IMAGE_BUCKET_NAME = aws_s3_bucket.image_bucket.bucket
+    }
+  }
 }
 
 resource "aws_api_gateway_rest_api" "api" {

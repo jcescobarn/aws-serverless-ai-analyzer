@@ -1,0 +1,52 @@
+name: "deploy lambdas"
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src_upload/**'
+      - 'src_analyze/**'
+  workflow_dispatch:
+
+
+jobs:
+
+  deploy-backend:
+    name: deploy lambdas"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Credentials 
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1 # O la región de tu lab
+
+      - name: Zip Lambda 'get-upload-url'
+        run: |
+          cd src_upload
+          zip -r ../upload_lambda.zip .
+          cd ..
+
+      - name: Zip Lambda 'analyze-image'
+        run: |
+          cd src_analyze
+          zip -r ../analyze_lambda.zip .
+          cd ..
+
+      - name: Deploy  Lambda 'get-upload-url'
+        run: |+
+          aws lambda update-function-code \
+            --function-name get-upload-url \
+            --zip-file fileb://upload_lambda.zip
+          
+      - name: Deploy Lambda 'analyze-image'
+        run: |
+          aws lambda update-function-code \
+            --function-name analyze-image \
+            --zip-file fileb://analyze_lambda.zip
