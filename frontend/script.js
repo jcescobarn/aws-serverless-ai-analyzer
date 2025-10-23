@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewImg = document.getElementById('preview');
     const labelList = document.getElementById('labelList');
 
-    const API_ENDPOINT = window.API_GATEWAY_URL + "/prod";
+    const API_ENDPOINT = "https://lrlrpg6klg.execute-api.us-east-1.amazonaws.com/prod";
     const IMAGE_BUCKET = window.IMAGE_BUCKET_NAME;
 
     uploadButton.addEventListener('click', async () => {
