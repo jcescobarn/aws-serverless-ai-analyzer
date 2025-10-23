@@ -253,7 +253,7 @@ resource "aws_lambda_permission" "allow_api_analyze" {
 resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.api.id
 
-  # Truco para forzar un nuevo despliegue cuando algo cambia
+
   triggers = {
     redeployment = sha1(jsonencode([
       aws_api_gateway_resource.upload.id,
