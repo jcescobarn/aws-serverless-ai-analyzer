@@ -1,3 +1,6 @@
+data "aws_iam_role" "lab_role" {
+  name = "LabRole"
+}
 resource "aws_s3_bucket" "image_bucket" {
   bucket = var.s3_image_bucket_name
 }
@@ -198,9 +201,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
   triggers = {
     redeployment = sha1(jsonencode([
       aws_api_gateway_resource.upload.id,
-      aws_api_gateway_resource.analyze.id,
-      module.cors_upload.id,
-      module.cors_analyze.id
+      aws_api_gateway_resource.analyze.id
     ]))
   }
 
