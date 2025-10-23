@@ -12,19 +12,19 @@ resource "aws_s3_bucket_public_access_block" "frontend_block" {
 
 # --- 5. FRONTEND: CloudFront (CDN) ---
 
-# Usamos Origin Access Control (OAC), el método moderno.
-resource "aws_cloudfront_origin_access_control" "oac" {
-  name                              = "oac-s3-${aws_s3_bucket.frontend_bucket.bucket}"
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
+# Usamos Origin Access Identity (OAI) para compatibilidad con permisos limitados
+resource "aws_cloudfront_origin_access_identity" "oai" {
+  comment = "OAI for ${aws_s3_bucket.frontend_bucket.bucket}"
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name              = aws_s3_bucket.frontend_bucket.bucket_regional_domain_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
-    origin_id                = "S3-${aws_s3_bucket.frontend_bucket.bucket}"
+    domain_name = aws_s3_bucket.frontend_bucket.bucket_domain_name
+    origin_id   = "S3-${aws_s3_bucket.frontend_bucket.bucket}"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
+    }
   }
 
   enabled             = true
@@ -54,21 +54,18 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 }
 
-# Política del bucket S3 para permitir que CloudFront lea los archivos
+# Política del bucket S3 para permitir que CloudFront lea los archivos usando OAI
 resource "aws_s3_bucket_policy" "allow_cloudfront" {
   bucket = aws_s3_bucket.frontend_bucket.id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
       Effect    = "Allow",
-      Principal = { Service = "cloudfront.amazonaws.com" },
+      Principal = {
+        AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+      },
       Action    = "s3:GetObject",
-      Resource  = "${aws_s3_bucket.frontend_bucket.arn}/*",
-      Condition = {
-        StringEquals = {
-          "AWS:SourceArn" = aws_cloudfront_distribution.s3_distribution.arn
-        }
-      }
+      Resource  = "${aws_s3_bucket.frontend_bucket.arn}/*"
     }]
   })
 }

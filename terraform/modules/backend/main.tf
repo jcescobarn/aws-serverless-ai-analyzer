@@ -62,6 +62,17 @@ resource "aws_api_gateway_integration" "upload_integration" {
   uri                     = aws_lambda_function.upload_url_lambda.invoke_arn
 }
 
+resource "aws_api_gateway_method_response" "upload_response" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.upload.id
+  http_method = aws_api_gateway_method.upload_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 resource "aws_api_gateway_resource" "analyze" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
@@ -82,6 +93,17 @@ resource "aws_api_gateway_integration" "analyze_integration" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.analyze_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_method_response" "analyze_response" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.analyze.id
+  http_method = aws_api_gateway_method.analyze_post.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
 }
 
 # CORS para recurso upload

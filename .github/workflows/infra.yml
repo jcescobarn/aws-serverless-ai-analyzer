@@ -34,7 +34,7 @@ jobs:
 
     - name: zip lambda codes
       run: |
-        zip -r upload-lambda.zip src_upload/
+        zip -r upload_lambda.zip src_upload/
         zip -r analyze_lambda.zip src_analyze/
 
     - name: execute terraform
