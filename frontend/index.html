@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main>
+        <h1>🤖 AI Image Analyzer</h1>
+        <p>Upload an image (JPG/PNG) and the AI will analyze its content.</p>
+
+        <div class="uploader">
+            <input type="file" id="fileInput" accept="image/jpeg,image/png">
+            <button id="uploadButton">Analyze Image</button>
+        </div>
+
+        <div id="statusArea">
+            <p id="statusText">Please select an image.</p>
+        </div>
+
+        <div id="resultsArea">
+            <img id="preview" src="" alt="Image preview">
+            <ul id="labelList">
+            </ul>
+        </div>
+    </main>
+
+    <script src="config.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+name: "Deploy Frontend (S3)"
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+    - 'frontend/**'
+
+  # Allow manual execution
+  workflow_dispatch:
+
+
+jobs:
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+        aws-region: us-east-1
+
+    - name: Inject configuration into 'config.js'
+      run: |
+        echo "window.API_GATEWAY_URL = 'YOUR_API_GATEWAY_URL';" > frontend/config.js
+        echo "window.IMAGE_BUCKET_NAME = 'rec-example-image-bucket';" >> frontend/config.js
+        echo "config.js file generated:"
+        cat frontend/config.js
+
+    - name: Deploy frontend files to S3
+      run: |
+        aws s3 sync ./frontend/ s3://rec-example-frontend-bucket --delete
+
+    - name: Print site URL
+      run: |
+        echo "✅ Website deployed! Visit it at: http://rec-example-frontend-bucket.s3-website-us-east-1.amazonaws.com"
